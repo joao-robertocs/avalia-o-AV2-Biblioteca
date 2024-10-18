@@ -71,14 +71,22 @@ def menu_clientes():
             cpf = input('CPF do cliente: ')
             cadastrar_cliente(nome, endereco, cpf)
         elif escolha == '2':
-            indice = int(input('Índice do cliente a editar: '))
-            novo_nome = input('Novo nome do cliente: ')
-            novo_endereco = input('Novo endereço do cliente: ')
-            novo_cpf = input('Novo CPF do cliente: ')
-            editar_cliente(indice, novo_nome, novo_endereco, novo_cpf)
+            try:
+                indice = int(input('Índice do cliente a editar: '))
+                novo_nome = input('Novo nome do cliente: ')
+                novo_endereco = input('Novo endereço do cliente: ')
+                novo_cpf = input('Novo CPF do cliente: ')
+                editar_cliente(indice, novo_nome, novo_endereco, novo_cpf)
+            except ValueError:
+                print('Por favor, insira um número válido para o índice.')
+                msvcrt.getch()
         elif escolha == '3':
-            indice = int(input('Índice do cliente a excluir: '))
-            excluir_cliente(indice)
+            try:
+                indice = int(input('Índice do cliente a excluir: '))
+                excluir_cliente(indice)
+            except ValueError:
+                print('Por favor, insira um número válido para o índice.')
+                msvcrt.getch()
         elif escolha == '4':
             exibir_clientes()
         elif escolha == '5':
@@ -86,4 +94,3 @@ def menu_clientes():
             break
         else:
             print('Opção inválida! Tente novamente.')
-            msvcrt.getch()
