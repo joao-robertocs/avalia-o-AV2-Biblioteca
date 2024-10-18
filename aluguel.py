@@ -68,10 +68,14 @@ def menu_aluguel():
             limpar_terminal()
             aluguel_livro(indice_livro, indice_cliente)
         elif escolha == '2':
-            limpar_terminal()
-            exibir_alugados()
-            indice = int(input('Índice do livro a devolver: '))
-            devolucao_livro(indice)
+            try:
+                limpar_terminal()
+                exibir_alugados()
+                indice = int(input('Índice do livro a devolver: '))
+                devolucao_livro(indice)
+            except ValueError:
+                print('Por favor, insira um número válido para o índice.')
+                msvcrt.getch()
         elif escolha == '3':
             exibir_alugados()
         elif escolha == '4':

@@ -7,7 +7,8 @@ def cadastrar_livro(titulo,autor):
     limpar_terminal()
     livro = {
         'titulo': titulo,
-        'autor' : autor
+        'autor' : autor,
+        'disponivel': True
     }
 
     for livro_existente in livros:
