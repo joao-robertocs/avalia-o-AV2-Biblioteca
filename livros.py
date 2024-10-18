@@ -7,8 +7,7 @@ def cadastrar_livro(titulo,autor):
     limpar_terminal()
     livro = {
         'titulo': titulo,
-        'autor' : autor,
-        'disponivel': True
+        'autor' : autor
     }
 
     for livro_existente in livros:
@@ -51,7 +50,7 @@ def exibir_livros():
         print('Livros cadastrados:')
         for i in range(len(livros)):
             print(f'{i}. Título: "{livros[i]["titulo"]}", Autor: {livros[i]["autor"]}"')
-        msvcrt.getch()
+    msvcrt.getch()
 
 def menu_livro():
     while True:
@@ -69,19 +68,25 @@ def menu_livro():
             autor = input('Autor do livro: ')
             cadastrar_livro(titulo, autor)
         elif escolha == '2':
-            indice = int(input('Índice do livro a editar: '))
-            novo_titulo = input('Novo título do livro: ')
-            novo_autor = input('Novo autor do livro: ')
-            editar_livro(indice, novo_titulo, novo_autor)
+            try:
+                indice = int(input('Índice do livro a editar: '))
+                novo_titulo = input('Novo título do livro: ')
+                novo_autor = input('Novo autor do livro: ')
+                editar_livro(indice, novo_titulo, novo_autor)
+            except ValueError:
+                print('Por favor, insira um número válido para o índice.')
+                msvcrt.getch()
         elif escolha == '3':
-            indice = int(input('Índice do livro a excluir: '))
-            excluir_livro(indice)
+            try:
+                indice = int(input('Índice do livro a excluir: '))
+                excluir_livro(indice)
+            except ValueError:
+                print('Por favor, insira um número válido para o índice.')
+                msvcrt.getch()
         elif escolha == '4':
             exibir_livros()
         elif escolha == '5':
             print('Voltando ao menu principal.')
             break
         else:
-            limpar_terminal()
             print('Opção inválida! Tente novamente.')
-            msvcrt.getch()
