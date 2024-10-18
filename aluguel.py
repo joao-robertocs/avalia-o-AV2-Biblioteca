@@ -47,7 +47,7 @@ def exibir_alugados():
         for i in range(len(livros_alugados)):
             livro = livros_alugados[i]
             print(f'{i}. Título: "{livro['livro']['titulo']}\nAutor: {livro['livro']['autor']}\nAlugado por: {livro['cliente']['nome']}')
-
+        msvcrt.getch()
 def menu_aluguel():
     while True:
         limpar_terminal()
