@@ -2,6 +2,8 @@ from funcionalidades.limpador_tela import limpar_terminal
 from sistema_principal.config_db import criar_conexao
 import msvcrt
 
+livros = []
+
 def cadastrar_livro(titulo,genero,idioma,data_estreia,id_autor,id_editora):
     limpar_terminal()
     conn = criar_conexao()
@@ -85,7 +87,6 @@ def exibir_livros():
 
 def menu_livro():
     while True:
-        limpar_terminal()
         print('Menu:')
         print('1 - Cadastrar Livro')
         print('2 - Editar Livro')
@@ -121,6 +122,7 @@ def menu_livro():
                 msvcrt.getch()
         elif escolha == '4':
             exibir_livros()
+            msvcrt.getch()
         elif escolha == '5':
             print('Voltando ao menu principal.')
             break
