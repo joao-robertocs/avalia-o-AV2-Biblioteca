@@ -1,31 +1,36 @@
 import msvcrt
-import sys
-import getpass
 from funcionalidades.limpador_tela import limpar_terminal
+from secoes_sistema.livros import menu_livro
+from secoes_sistema.clientes import menu_clientes
+from secoes_sistema.aluguel import menu_aluguel
+
 
 def acessar_sistema():
-    usuario = 'admin'
-    senha = 'admin'
-    limite_tentativas = 3
-    tentativas = 0
-
-    print('Para acessar o sistema digite usuário e senha corretos')
     while True:
-        solicita_usuario = input('Usuário: ')
-        solicita_senha = getpass.getpass('Senha: ')
-    
-        if solicita_usuario == usuario and solicita_senha == senha:
-            limpar_terminal()
-            print('Acesso Permitido!')
-            print('Aperte qualquer tecla para ir para próxima sessão')
-            msvcrt.getch()
-            break
-        else:
-            tentativas += 1
-            limpar_terminal()
-            print('Senha incorreta \nTente de novo')
+        limpar_terminal()
+        print("""Menu Principal:
+        1 - Gerenciar Livros
+        2 - Gerenciar Clientes
+        3 - Gerenciar Aluguel
+        4 - Fechar Sistema""")
+
+        opcao = int(input('Digite sua opção desejada: '))
+
+
+        if opcao == 1:
+            menu_livro()
         
-        if tentativas == limite_tentativas:
+        elif opcao == 2:
+            menu_clientes()
+        
+        elif opcao == 3:
+            menu_aluguel()
+
+        elif opcao == 4:
             limpar_terminal()
-            print('Número máximo de tentativas atingido! \nAcesso Negado!')
-            sys.exit()
+            print('Sistema Encerrado, até a próxima!')
+            break
+        
+        else:
+            print('Opção Inválida!')
+            msvcrt.getch()

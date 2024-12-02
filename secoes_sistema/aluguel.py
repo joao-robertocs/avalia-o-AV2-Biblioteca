@@ -1,84 +1,122 @@
-from secoes_sistema.clientes import clientes
 from secoes_sistema.clientes import exibir_clientes
-from secoes_sistema.livros import livros
 from secoes_sistema.livros import exibir_livros
 from funcionalidades.limpador_tela import limpar_terminal
+from sistema_principal.config_db import criar_conexao
 import msvcrt
 
 livros_alugados = []
 
-def aluguel_livro(indice_livro, indice_cliente):
+def aluguel_livro(data_aluguel, id_livro, id_cliente, data_prevista):
+     limpar_terminal()
+     conn = criar_conexao()
+     try:
+        cursor = conn.cursor()
+        query = 'INSERT INTO aluguel (data_aluguel, id_livro, id_cliente, data_prevista) VALUES (%s, %s, %s, %s);'
+        cursor.execute(query, (data_aluguel, id_livro, id_cliente, data_prevista))
+        conn.commit()
+        print('Aluguel realizado com sucesso!')
+     except Exception as e:
+        print(f'Erro ao realizar aluguel: {e}')
+     finally:
+        cursor.close()
+        conn.close()
+        
+
+def livro_atrasado(livro_atrasado, id_livro):
     limpar_terminal()
-    if 0 <= indice_livro < len(livros) and 0 <= indice_cliente < len(clientes):
-        if livros [indice_livro]['disponivel']:
-            livros[indice_livro]['disponivel'] = False
-            livro_alugado = {
-                'livro': livros[indice_livro],
-                'cliente': clientes[indice_cliente]
-            }
-            livros_alugados.append(livro_alugado)
-            print(f'Livro "{livros[indice_livro]['titulo']}" alugado para {clientes[indice_cliente]['nome']} com sucesso!')
-        else:
-            print(f'O livro "{livros[indice_livro]['titulo']}" já foi alugado.')
-    else: 
-        print('Índice Inválido!')
+    conn = criar_conexao()
+    try:
+        cursor = conn.cursor()
+        query = 'UPDATE aluguel SET livro_atrasado = NOT livro_atrasado WHERE id_livro = %s;'
+        cursor.execute(query, (livro_atrasado, id_livro))
+        conn.commit()
+        print('O status do livro alugado foi atualizado para "ATRASADO".')
+    except Exception as e:
+        print(f'Erro ao atualizar o status do livro: {e}')
+    finally:
+        cursor.close()
+        conn.close()
     msvcrt.getch()
 
-def devolucao_livro(indice):
+
+def devolucao_livro(id_livro, id_cliente, data_devolucao):
     limpar_terminal()
-    if 0 <= indice <= len(livros_alugados):
-        livro_devolvido = livros_alugados.pop(indice)
-        for livro in livros:
-            if livro['titulo'] == livro_devolvido['livro']['titulo']:
-                livro['disponivel'] = True
-                break
-        print(f'Livro "{livro_devolvido['livro']['titulo']}" devolvido por {livro_devolvido['cliente']['nome']} com sucesso!')
-    else:
-        print('Índice Inválido!')
-    msvcrt.getch()
+    conn = criar_conexao()
+    try:
+        cursor = conn.cursor()
+        query = 'INSERT INTO aluguel (id_livro, id_cliente, data_devolucao) VALUES (%s, %s, %s);'
+        cursor.execute(query, (id_livro, id_cliente, data_devolucao))
+        conn.commit()
+        print('A data para devolução do livro foi informada!')
+    except Exception as e:
+        print(f'Erro ao informar a data para devolução do livro: {e}')
+    finally:
+        cursor.close()
+        conn.close()
 
 def exibir_alugados():
     limpar_terminal()
-    if not livros_alugados:
-        print('Nenhum livro alugado no momento.')
-        msvcrt.getch()
-    else: 
-        print('Livros Alugados:')
-        for i in range(len(livros_alugados)):
-            livro = livros_alugados[i]
-            print(f'{i}. Título: "{livro['livro']['titulo']}\nAutor: {livro['livro']['autor']}\nAlugado por: {livro['cliente']['nome']}')
-        msvcrt.getch()
+    conn = criar_conexao()
+    try:
+        cursor = conn.cursor()
+        query = 'SELECT * FROM aluguel;'
+        cursor.execute(query)
+        exibicao_aluguel = cursor.fetchall()
+        print(exibicao_aluguel)
+        conn.commit()
+    except Exception as e:
+        print(f'Erro ao exibir os aluguéis: {e}')
+    finally:
+        cursor.close()
+        conn.close()
+    msvcrt.getch()
+
+
 def menu_aluguel():
     while True:
         limpar_terminal()
         print('Menu Aluguel:')
         print('1 - Realizar Aluguel')
-        print('2 - Realizar Devolução')
-        print('3 - Exibir Livros Alugados')
-        print('4 - Retornar ao Menu Principal')
+        print('2 - Atualizar Status do Livro Alugado')
+        print('3 - Informar Devolução')
+        print('4 - Exibir Livros Alugados')
+        print('5 - Retornar ao Menu Principal')
 
         escolha = input('Digite a opção desejada: ')
 
         if escolha == '1':
+            data_aluguel = input('Informe a data do aluguel: ')
             exibir_livros()
-            indice_livro = int(input('Índice do livro a alugar: '))
+            id_livro = int(input('Informe o ID do livro que será alugado: '))
             limpar_terminal()
             exibir_clientes()
-            indice_cliente = int(input('Índice do cliente: '))
+            id_cliente = int(input('Informe o ID do cliente que está alugando: '))
             limpar_terminal()
-            aluguel_livro(indice_livro, indice_cliente)
+            data_prevista = input('Informe a data prevista para devolução do livro: ')
+            aluguel_livro(data_aluguel, id_livro, id_cliente, data_prevista)
         elif escolha == '2':
             try:
                 limpar_terminal()
                 exibir_alugados()
-                indice = int(input('Índice do livro a devolver: '))
-                devolucao_livro(indice)
+                id_livro = input('Informe o ID do livro que está atrasado: ')
+                livro_atrasado(id_livro)
             except ValueError:
-                print('Por favor, insira um número válido para o índice.')
-                msvcrt.getch()
+                print('Informe um ID de livro.') 
+        
         elif escolha == '3':
-            exibir_alugados()
+            try:
+                limpar_terminal()
+                exibir_alugados()
+                id_livro = int(input('ID do livro que será devolvido: '))
+                id_cliente = int(input('ID do cliente que está devolvendo livro: '))
+                data_devolucao = input('Data que o cliente está devolvendo o livro: ')
+                devolucao_livro(id_livro, id_cliente, data_devolucao)
+            except ValueError:
+                print('Por favor, insira um número válido para o ID.')
+                msvcrt.getch()
         elif escolha == '4':
+            exibir_alugados()
+        elif escolha == '5':
             print('Voltando ao menu principal.')
             msvcrt.getch()
             break

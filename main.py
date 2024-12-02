@@ -1,42 +1,58 @@
 from sistema_principal.config_db import criar_conexao
 from funcionalidades.limpador_tela import limpar_terminal
 from sistema_principal.acesso_sistema import acessar_sistema
-from secoes_sistema.livros import menu_livro
-from secoes_sistema.clientes import menu_clientes
-from secoes_sistema.aluguel import menu_aluguel
+from secoes_sistema.usuarios import cadastrar_usuario, login_sistema, delete_users
 import msvcrt
+import sys
+import getpass
+
+limite_tentativas = 3
+tentativas = 0
 
 conn = criar_conexao()
 
 if conn:
     conn.close()
 
-acessar_sistema()
 while True:
     limpar_terminal()
-    print("""Menu Principal:
-    1 - Gerenciar Livros
-    2 - Gerenciar Clientes
-    3 - Gerenciar Aluguel
-    4 - Fechar Sistema""")
-
-    opcao = int(input('Digite sua opção desejada: '))
-
-
-    if opcao == 1:
-        menu_livro()
+    print('Bem vindo ao sistema da biblioteca!')
+    print('Digite sua escolha')
+    print('1 - Login  || 2 - Cadastrar Novo Usuário || 3 - Excluir Usuário || 4 - Fechar Sistema')
     
-    elif opcao == 2:
-        menu_clientes()
-    
-    elif opcao == 3:
-        menu_aluguel()
+    opcao = input('Digite sua opção: ')
 
-    elif opcao == 4:
+    
+    if opcao == '1':
         limpar_terminal()
-        print('Sistema Encerrado, até a próxima!')
+        email_users = input('Digite o email de um usuário cadastrado: ')
+        password = getpass.getpass('Digite a senha do usuário: ')
+        autenticar_usuario = login_sistema(email_users, password)
+        if autenticar_usuario:
+            print('Acesso Permitido!')
+            print('Aperte qualquer tecla para ir para próxima sessão')
+            msvcrt.getch()
+            acessar_sistema(autenticar_usuario)
+        else:
+            print('Usuário ou senha incorreto!')
+            tentativas += 1
+            msvcrt.getch()
+
+            if tentativas == limite_tentativas:
+                limpar_terminal()
+                print('Número máximo de tentativas atingido! \nAcesso Negado!')
+                sys.exit()
+
+    if opcao == '2':
+        limpar_terminal()
+        name_users = input('Digite o nome do novo usuário: ')
+        email_users = input('Digite um email para cadastrar o usuário: ')
+        password = input('Digite uma senha de acesso para o usuário: ')
+        cadastrar_usuario(name_users, email_users, password)
+
+    if opcao == '3':
+        email_users = input('Informe o email do usuário que deseja excluir: ')
+        delete_users(email_users)
+
+    if opcao == '4':
         break
-    
-    else:
-        print('Opção Inválida!')
-        msvcrt.getch()

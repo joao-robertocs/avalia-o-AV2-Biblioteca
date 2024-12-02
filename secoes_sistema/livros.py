@@ -2,7 +2,6 @@ from funcionalidades.limpador_tela import limpar_terminal
 from sistema_principal.config_db import criar_conexao
 import msvcrt
 
-livros = []
 
 def cadastrar_livro(titulo,genero,idioma,data_estreia,id_autor,id_editora):
     limpar_terminal()
@@ -24,11 +23,11 @@ def verificar_livro(titulo):
     conn = criar_conexao()
     try:
         cursor = conn.cursor()
-        query = 'SELECT * FROM livro WHERE titulo = %s;'
-        cursor.execute(query, (titulo))
+        query = 'SELECT * FROM livro WHERE titulo like %s;'
+        cursor.execute(query, (titulo,))
         conn.commit()
     except Exception as e:
-        print(f'Erro ao buscar o livro: {e}')
+        print(f'Erro ao verificar o livro: {e}')
     finally:
         cursor.close()
         conn.close()
@@ -37,8 +36,6 @@ def verificar_livro(titulo):
 def editar_livro(titulo, novo_titulo):
     limpar_terminal()
     conn = criar_conexao()
-    titulo = input('Digite o titulo do livro que deseja editar: ')
-    verificar_livro(titulo)
     try:
         cursor = conn.cursor()
         query = 'UPDATE livro SET titulo = %s WHERE titulo = %s;'
@@ -55,20 +52,19 @@ def editar_livro(titulo, novo_titulo):
 def excluir_livro(titulo):
     limpar_terminal()
     conn = criar_conexao()
-    titulo = input('Digite o titulo do livro que deseja excluir: ')
-    verificar_livro(titulo)
     try:
         cursor = conn.cursor()
-        query = 'DELETE FROM livro WHERE titulo = %s;'
-        cursor.execute(query, (titulo))
-        conn.commit()
+        query = 'DELETE FROM livro WHERE titulo like %s;'
+        cursor.execute(query, (titulo,))
         print('Livro excluido com sucesso!')
+        conn.commit()    
     except Exception as e:
         print(f'Erro ao excluir o livro: {e}')
     finally:
         cursor.close()
         conn.close()
         msvcrt.getch()
+
 
 def exibir_livros():
     limpar_terminal()
@@ -77,6 +73,8 @@ def exibir_livros():
         cursor = conn.cursor()
         query = 'SELECT * FROM livro;'
         cursor.execute(query)
+        exibicao_livros = cursor.fetchall()
+        print(exibicao_livros)
         conn.commit()
     except Exception as e:
         print(f'Erro ao exibir os livros: {e}')
@@ -105,24 +103,19 @@ def menu_livro():
             cadastrar_livro(titulo,genero,idioma,data_estreia,id_autor,id_editora)
             msvcrt.getch()
         elif escolha == '2':
-            try:
-                indice = int(input('Índice do livro a editar: '))
                 novo_titulo = input('Novo título do livro: ')
                 novo_autor = input('Novo autor do livro: ')
-                editar_livro(indice, novo_titulo, novo_autor)
-            except ValueError:
-                print('Por favor, insira um número válido para o índice.')
+                editar_livro(novo_titulo, novo_autor)
                 msvcrt.getch()
         elif escolha == '3':
             try:
-                indice = int(input('Índice do livro a excluir: '))
-                excluir_livro(indice)
+                titulo = input('Informe o titulo do livro a excluir: ')
+                excluir_livro(titulo)
             except ValueError:
-                print('Por favor, insira um número válido para o índice.')
+                print('Por favor, insira um titulo válido para o livro.')
                 msvcrt.getch()
         elif escolha == '4':
             exibir_livros()
-            msvcrt.getch()
         elif escolha == '5':
             print('Voltando ao menu principal.')
             break

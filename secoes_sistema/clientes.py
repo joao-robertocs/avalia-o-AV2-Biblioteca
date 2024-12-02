@@ -1,58 +1,84 @@
 from funcionalidades.limpador_tela import limpar_terminal
+from sistema_principal.config_db import criar_conexao
 import msvcrt
 
-clientes = []
-
-def cadastrar_cliente(nome, endereco, cpf):
+def cadastrar_cliente(nome_cliente, endereco, email, telefone):
     limpar_terminal()
-    cliente = {
-        'nome': nome,
-        'endereco': endereco,
-        'cpf': cpf
-    }
-    
-    for cliente_existente in clientes:
-        if cliente_existente['cpf'].lower() == cpf.lower():
-            print(f'O cliente com o cpf "{cpf}" já está cadastrado.')
-            msvcrt.getch()
-            return
-    
-    clientes.append(cliente)
-    print(f'Cliente {nome} foi cadastrado no sistema!')
-    msvcrt.getch()
+    conn = criar_conexao()
+    try:
+        cursor = conn.cursor()
+        query = 'INSERT INTO cliente (nome_cliente, endereco, email, telefone) VALUES (%s, %s, %s, %s);'
+        cursor.execute(query, (nome_cliente, endereco, email, telefone))
+        conn.commit()
+        print('Cliente cadastrado com sucesso!')
+    except Exception as e:
+        print(f'Erro ao cadastrar o cliente: {e}')
+    finally:
+        cursor.close()
+        conn.close()
 
-def editar_cliente(indice, novo_nome, novo_endereco, novo_cpf):
+def verificar_cliente(nome_cliente):
     limpar_terminal()
-    if 0 <= indice <= len(clientes):
-        clientes[indice]['nome'] = novo_nome
-        clientes[indice]['endereco'] = novo_endereco
-        clientes[indice]['cpf'] = novo_cpf
-        print(f'Cliente na posição {indice} editado com sucesso!')
-        msvcrt.getch()
-    else:
-        print('Índice Inválido!')
+    conn = criar_conexao()
+    try:
+        cursor = conn.cursor()
+        query = 'SELECT * FROM cliente WHERE cliente like %s;'
+        cursor.execute(query, (nome_cliente,))
+        conn.commit()
+    except Exception as e:
+        print(f'Erro ao verificar o cliente: {e}')
+    finally:
+        cursor.close()
+        conn.close()
+
+def editar_cliente(nome_cliente, novo_nome):
+    limpar_terminal()
+    conn = criar_conexao()
+    try:
+        cursor = conn.cursor()
+        query = 'UPDATE cliente SET nome_cliente = %s WHERE nome_cliente = %s;'
+        cursor.execute(query, (novo_nome, nome_cliente))
+        conn.commit()
+        print('Cliente editado com sucesso!')
+    except Exception as e:
+        print(f'Erro ao editar o dados do cliente: {e}')
+    finally:
+        cursor.close()
+        conn.close()
         msvcrt.getch()
 
-def excluir_cliente(indice):
+def excluir_cliente(nome_cliente):
     limpar_terminal()
-    if 0 <= indice < len(clientes):
-        cliente_removido = clientes.pop(indice)
-        print(f'Cliente "{cliente_removido["nome"]}" excluído com sucesso!')
-        msvcrt.getch()
-    else:
-        print('Índice Inválido!')
+    conn = criar_conexao()
+    try:
+        cursor = conn.cursor()
+        query = 'DELETE FROM cliente WHERE nome_cliente like %s;'
+        cursor.execute(query, (nome_cliente,))
+        print('Cliente excluido com sucesso!')
+        conn.commit()    
+    except Exception as e:
+        print(f'Erro ao excluir os dados do cliente: {e}')
+    finally:
+        cursor.close()
+        conn.close()
         msvcrt.getch()
 
 def exibir_clientes():
     limpar_terminal()
-    if not clientes:
-        print('Nenhum cliente cadastrado.')
-        msvcrt.getch()
-    else:
-        print('Clientes cadastrados:')
-        for i in range(len(clientes)):
-            print(f'{i}. Nome: "{clientes[i]["nome"]}", Endereço: {clientes[i]["endereco"]}, CPF: {clientes[i]["cpf"]}"')
-    msvcrt.getch() 
+    conn = criar_conexao()
+    try:
+        cursor = conn.cursor()
+        query = 'SELECT * FROM cliente;'
+        cursor.execute(query)
+        exibicao_clientes = cursor.fetchall()
+        print(exibicao_clientes)
+        conn.commit()
+    except Exception as e:
+        print(f'Erro ao exibir os clientes: {e}')
+    finally:
+        cursor.close()
+        conn.close()
+    msvcrt.getch()
 
 def menu_clientes():
     while True:
@@ -66,24 +92,19 @@ def menu_clientes():
         escolha = input('Escolha uma opção (1-5): ')
 
         if escolha == '1':
-            nome = input('Nome do cliente: ')
+            nome_cliente = input('Nome do cliente: ')
             endereco = input('Endereço do cliente: ')
-            cpf = input('CPF do cliente: ')
-            cadastrar_cliente(nome, endereco, cpf)
+            email = input('E-mail do cliente: ')
+            telefone = input('Telefone do cliente: ')
+            cadastrar_cliente(nome_cliente, endereco, email, telefone)
         elif escolha == '2':
-            try:
-                indice = int(input('Índice do cliente a editar: '))
-                novo_nome = input('Novo nome do cliente: ')
-                novo_endereco = input('Novo endereço do cliente: ')
-                novo_cpf = input('Novo CPF do cliente: ')
-                editar_cliente(indice, novo_nome, novo_endereco, novo_cpf)
-            except ValueError:
-                print('Por favor, insira um número válido para o índice.')
-                msvcrt.getch()
+            nome_cliente = input('Informe o nome do cliente: ')
+            novo_nome = input('Informe o novo nome do cliente: ')
+            editar_cliente(nome_cliente, novo_nome)
         elif escolha == '3':
             try:
-                indice = int(input('Índice do cliente a excluir: '))
-                excluir_cliente(indice)
+                excluir_nome_cliente = input('Informe o nome do cliente a excluir: ')
+                excluir_cliente(excluir_nome_cliente)
             except ValueError:
                 print('Por favor, insira um número válido para o índice.')
                 msvcrt.getch()
