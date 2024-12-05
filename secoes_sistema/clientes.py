@@ -112,6 +112,7 @@ def menu_clientes():
             exibir_clientes()
         elif escolha == '5':
             print('Voltando ao menu principal.')
+            msvcrt.getch()
             break
         else:
             print('Opção inválida! Tente novamente.')

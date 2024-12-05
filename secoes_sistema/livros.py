@@ -118,6 +118,7 @@ def menu_livro():
             exibir_livros()
         elif escolha == '5':
             print('Voltando ao menu principal.')
+            msvcrt.getch()
             break
         else:
             print('Opção inválida! Tente novamente.')

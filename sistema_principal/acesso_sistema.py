@@ -18,12 +18,15 @@ def acessar_sistema():
 
 
         if opcao == 1:
+            limpar_terminal()
             menu_livro()
         
         elif opcao == 2:
+            limpar_terminal()
             menu_clientes()
         
         elif opcao == 3:
+            limpar_terminal()
             menu_aluguel()
 
         elif opcao == 4:

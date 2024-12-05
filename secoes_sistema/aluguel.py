@@ -22,13 +22,13 @@ def aluguel_livro(data_aluguel, id_livro, id_cliente, data_prevista):
         conn.close()
         
 
-def livro_atrasado(livro_atrasado, id_livro):
+def livro_atrasado(id_livro):
     limpar_terminal()
     conn = criar_conexao()
     try:
         cursor = conn.cursor()
         query = 'UPDATE aluguel SET livro_atrasado = NOT livro_atrasado WHERE id_livro = %s;'
-        cursor.execute(query, (livro_atrasado, id_livro))
+        cursor.execute(query, (id_livro,))
         conn.commit()
         print('O status do livro alugado foi atualizado para "ATRASADO".')
     except Exception as e:

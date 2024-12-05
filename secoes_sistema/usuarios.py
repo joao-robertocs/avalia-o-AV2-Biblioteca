@@ -40,7 +40,7 @@ def login_sistema(email_users, password):
 
     if resultado:
         senha_hash = resultado[3]
-        if not isinstance(senha_hash, memoryview):
+        if isinstance(senha_hash, memoryview):
              senha_hash = bytes(senha_hash)
 
         if checar_senha(password, senha_hash):

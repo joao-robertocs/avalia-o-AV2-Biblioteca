@@ -32,7 +32,7 @@ while True:
             print('Acesso Permitido!')
             print('Aperte qualquer tecla para ir para próxima sessão')
             msvcrt.getch()
-            acessar_sistema(autenticar_usuario)
+            acessar_sistema()
         else:
             print('Usuário ou senha incorreto!')
             tentativas += 1
