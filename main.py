@@ -47,7 +47,7 @@ while True:
         limpar_terminal()
         name_users = input('Digite o nome do novo usuário: ')
         email_users = input('Digite um email para cadastrar o usuário: ')
-        password = input('Digite uma senha de acesso para o usuário: ')
+        password = getpass.getpass('Digite uma senha de acesso para o usuário: ')
         cadastrar_usuario(name_users, email_users, password)
 
     if opcao == '3':
